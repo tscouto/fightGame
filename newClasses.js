@@ -1,76 +1,66 @@
-// knight ou Sorcerer - Gurerriro ou Mago
-// LittleMonster ou BigMonster
+const defaultCharacter = {
+  name: '',
+  life: 1,
+  maxLife: 1,
+  attack: 0,
+  defense: 0,
+};
 
-class Character {
-  _life = 1;
-  maxLife = 1;
-  attack = 0;
-  defense = 0;
+const createKnight = name => {
+  return {
+    ...defaultCharacter,
+    name,
+    life: 100,
+    maxLife: 100,
+    attack: 10,
+    defense: 8,
+  };
+};
 
-  constructor(name) {
-    this.name = name;
-    ('');
-  }
+const createSorcerer = name => {
+  return {
+    ...defaultCharacter,
+    name,
+    life: 45,
+    maxLife: 50,
+    attack: 14,
+    defense: 3,
+  };
+};
 
-  get life() {
-    return this._life;
-  }
-  set life(newLife) {
-    this._life = newLife < 0 ? 0 : newLife;
-  }
-}
+const createLittleMonster = name => {
+  return {
+    ...defaultCharacter,
+    name: 'Little Monster',
+    life: 40,
+    maxLife: 40,
+    attack: 4,
+    defense: 4,
+  };
+};
 
-class knight extends Character {
-  constructor(name) {
-    super(name);
-    this.life = 100;
-    this.attack = 10;
-    this.defense = 8;
-    this.maxLife = this.life;
-  }
-}
+const createBigMonster = name => {
+  return {
+    ...defaultCharacter,
+    name: 'Big Monster',
+    life: 120,
+    maxLife: 120,
+    attack: 16,
+    defense: 6,
+  };
+};
 
-class Sorcerer extends Character {
-  constructor(name) {
-    super(name);
-    this.life = 80;
-    this.attack = 15;
-    this.defense = 3;
-    this.maxLife = this.life;
-  }
-}
+const stage = {
+  fighter1: null,
+  fighter2: null,
+  fighter1El: null,
+  fighter2El: null,
 
-class LittleMonster extends Character {
-  constructor() {
-    super('Little Monster');
-    this.life = 30;
-    this.attack = 4;
-    this.defense = 4;
-    this.maxLife = this.life;
-  }
-}
-
-class BigMonster extends Character {
-  constructor() {
-    super('Big Monster');
-    this.life = 120;
-    this.attack = 16;
-    this.defense = 6;
-    this.maxLife = this.life;
-  }
-}
-
-class Stage {
-  constructor(fighter1, fighter2, fighter1El, fighter2El, logObject) {
+  start(fighter1, fighter2, fighter1El, fighter2El) {
     this.fighter1 = fighter1;
     this.fighter2 = fighter2;
     this.fighter1El = fighter1El;
     this.fighter2El = fighter2El;
-    this.log = logObject;
-  }
-
-  start() {
-    this.update();
     this.fighter1El
       .querySelector('.attackButton')
       .addEventListener('click', () =>
@@ -81,12 +71,13 @@ class Stage {
       .addEventListener('click', () =>
         this.doAttack(this.fighter2, this.fighter1)
       );
-  }
+    this.update();
+  },
   update() {
     // Fighter 1
     this.fighter1El.querySelector('.name').innerHTML = `${
       this.fighter1.name
-    } - ${this.fighter1.life.toFixed(1)}} HP`;
+    } - ${this.fighter1.life.toFixed(1)} HP`;
     let f1Pct = (this.fighter1.life / this.fighter1.maxLife) * 100;
     this.fighter1El.querySelector('.bar').style.width = `${f1Pct}%`;
 
@@ -97,13 +88,14 @@ class Stage {
     } - ${this.fighter2.life.toFixed(1)} HP`;
     let f12Pct = (this.fighter2.life / this.fighter2.maxLife) * 100;
     this.fighter2El.querySelector('.bar').style.width = `${f12Pct}%`;
-  }
+  },
 
   doAttack(attacking, attacked) {
     if (attacking.life <= 0 || attacked.life <= 0) {
-      this.log.addMessage('Atacando um cachorro morto');
+      log.addMessage('Atacando um cachorro morto');
       return;
     }
+
     let attackFactor = (Math.random() * 2).toFixed(2);
     let defenseFactor = (Math.random() * 2).toFixed(2);
 
@@ -113,35 +105,33 @@ class Stage {
     if (actualAttack > actualDefense) {
       attacked.life -= actualAttack;
       attacked.life = Math.max(0, attacked.life);
-      this.log.addMessage(
+      log.addMessage(
         `${attacking.name} causou ${actualAttack.toFixed(2)} de dano em ${
           attacked.name
         }`
       );
     } else {
-      this.log.addMessage(`${attacked.name} conseguiu defender....`);
+      log.addMessage(`${attacked.name} conseguiu defender....`);
     }
 
     // this.log.addMessageg(`${attacking.name} está atacando ${attacked.name}`);
     this.update();
-  }
-}
+  },
+};
 
-class Log {
-  list = [];
+const log = {
+  list: [],
 
-  constructor(listEL1) {
-    this.listEL1 = listEL1;
-  }
   addMessage(msg) {
     this.list.push(msg);
     this.render();
-  }
+  },
   render() {
-    this.listEL1.innerHTML = '';
+    const logE1 = document.querySelector('.log');
+    logE1.innerHTML = '';
 
     for (let i in this.list) {
-      this.listEL1.innerHTML += `<li>${this.list[i]}</li>`;
+      logE1.innerHTML += `<li>${this.list[i]}</li>`;
     }
-  }
-}
+  },
+};
